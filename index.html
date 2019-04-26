@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Eld Cabler</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+</head>
+<style>
+body{
+    background:#f4f4f4;
+}
+
+.response{
+width: 25vw;
+background: white;
+}
+#parent {
+        display: table; 
+        width: 100vw; 
+        height: 90vh; 
+        text-align: center; 
+      }
+#cabler{
+    display: table-cell;
+        vertical-align: middle;    
+}
+.result{
+    color: red;
+
+}
+</style>
+<body>
+    <div id="parent">
+    <div id="cabler" class=""> <h2>ELD Cable Picker</h2>
+        <div>Vehicle Identification #:
+            <input type="text" id="inputVin" size="35"  placeholder="ENTER VIN" >
+            <button id="vinCheckBtn" class="btn btn-primary" onclick="devodeVin(document.getElementById('inputVin').value);">check</button>
+            <div class="response  mx-auto">
+                <div class="text-left">Vehicle Protocol:<span class="result" id="GVWR"></span></div>
+                <div  class="text-left">Vehicle Year: <span class="result" id="year"></span></div>
+                <div  class="text-left">Vehicle Make:<span class="result" id="make"></span></div>
+                <div  class="text-left">Vehicle Model:<span class="result" id="model"></span></div>
+                <div class="text-left">Compatible Cable:<span class="result" id="CableType"></span></div>
+
+
+
+
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+       <script> 
+             function devodeVin(vinNumber) {
+        var Vnumber = document.getElementById("inputVin").value;
+        // console.log(vinNumber);
+        $.ajax({
+          url:
+            "https://vpic.nhtsa.dot.gov/api/vehicles/decodevinvalues/" +
+            vinNumber +
+            "?format=json",
+          type: "GET",
+          dataType: "json",
+          success: function(result) {
+            var GVWR=result.Results[0].GVWR;
+            var make = result.Results[0].Make;
+            var model = result.Results[0].Model;
+            var year = result.Results[0].ModelYear;
+            console.log("year:", Number(year), "make:", make, "model:", model);
+            // console.log(result.Results[0]);
+
+            document.getElementById("make").innerHTML = make;
+            document.getElementById("model").innerHTML = model;
+            document.getElementById("year").innerHTML = Number(year);
+            document.getElementById("GVWR").innerHTML = GVWR;
+            if(make ==="Peterbilt" ||make ==="PETERBILT" || make ==="peterbilt"){
+                if(year<2005){
+                    document.getElementById("CableType").innerHTML = "6-pin";
+                }
+                if(year>=2005 && year <2016){
+                    document.getElementById("CableType").innerHTML = "9-pin Blk";
+                }
+                if(year>=2016){
+                    document.getElementById("CableType").innerHTML = "9-pin Grn";
+                }
+            };
+
+            if(make ==="HINO" ||make ==="hino" || make ==="Hino"){
+                if(year>=2006 && year <2017){
+                    document.getElementById("CableType").innerHTML = "9-pin Blk ";
+                }
+                if(year>=2013){
+                    document.getElementById("CableType").innerHTML = "9-pin BLK or OBDII";
+                }
+            };
+
+            if(make ==="INTERNATIONAL" ||make ==="International" || make ==="international"){
+                if(year>=1993 && year <2014){
+                    document.getElementById("CableType").innerHTML = "6-pin";
+                }
+                if(year>=1995  && year <2016){
+                    document.getElementById("CableType").innerHTML = "9-pin BLK";
+                }
+                if(year>=2017){
+                    document.getElementById("CableType").innerHTML = "9-pin Grn";
+                }
+            };
+
+          },
+          error: function(xhr, ajaxOptions, thrownError) {
+            // console.log(xhr.status);
+            console.log(thrownError);
+          }
+        });
+      }
+
+        </script>
+</body>
+</html>
